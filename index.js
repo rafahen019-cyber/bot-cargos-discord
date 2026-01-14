@@ -8,10 +8,8 @@ const client = new Client({
 });
 
 // 🔧 CONFIGURAÇÃO
-const TOKEN = process.env.TOKEN;
-const GUILD_ID = process.env.GUILD_ID;
-const CHANNEL_ID = process.env.CHANNEL_ID;
-
+const GUILD_ID = "1328568366893498368";
+const CHANNEL_ID = "1460762390722253026";
 
 let MESSAGE_ID = null;
 
@@ -64,12 +62,20 @@ async function updateRolesEmbed() {
   }
 }
 
-// ⏱ Atualiza a cada 1 minuto
+// ⏱ Atualiza a cada 1 minuto (continua igual)
 setInterval(updateRolesEmbed, 60 * 1000);
 
-// 🔔 Atualiza quando alguém muda de cargo
-client.on("guildMemberUpdate", () => {
-  updateRolesEmbed();
+// 🔔 ATUALIZA AUTOMÁTICO QUANDO MUDA CARGO (o que você pediu)
+client.on("guildMemberUpdate", async (oldMember, newMember) => {
+  // Se os cargos mudaram
+  if (oldMember.roles.cache.size !== newMember.roles.cache.size) {
+    try {
+      await updateRolesEmbed();
+      console.log("Cargos atualizados automaticamente");
+    } catch (err) {
+      console.error("Erro ao atualizar cargos:", err);
+    }
+  }
 });
 
 // ▶ Bot ligado
@@ -78,4 +84,5 @@ client.once("ready", () => {
   updateRolesEmbed();
 });
 
-client.login(TOKEN);
+// 🔑 TOKEN vem do Render
+client.login(process.env.TOKEN);
